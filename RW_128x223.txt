@@ -1,0 +1,48 @@
+library ieee;
+use ieee.std_logic_1164.all;
+use ieee.numeric_std.all;
+
+entity RW_128x223_sync is
+	port (clock: in std_logic;
+			address: in std_logic_vector(7 downto 0);
+--			EN: out std_logic;
+			data_out:out std_logic_vector(7 downto 0));
+end entity;
+
+architecture RW_128x223_sync_arch of RW_128x223_sync is
+
+constant LDA_IMM : std_logic_vector (7 downto 0) := x"86";
+constant LDA_DIR : std_logic_vector (7 downto 0) := x"87";
+constant LDB_IMM : std_logic_vector (7 downto 0) := x"88";
+constant LDB_DIR : std_logic_vector (7 downto 0) := x"89";
+constant STA_DIR : std_logic_vector (7 downto 0) := x"96";
+constant STB_DIR : std_logic_vector (7 downto 0) := x"97";
+constant ADD_AB : std_logic_vector (7 downto 0) := x"42";
+constant BRA : std_logic_vector (7 downto 0) := x"20";
+constant BEQ : std_logic_vector (7 downto 0) := x"23";
+
+
+type rw_type is array (128 to 223) of std_logic_vector(7 downto 0);
+signal RW : rw_type;
+
+SIGNAL EN: std_logic;
+begin
+	enable : process (address)
+		begin
+			if ( (to_integer(unsigned(address)) >= 128) and
+				(to_integer(unsigned(address)) <= 223)) then
+				EN <= ’1’;
+			else
+				EN <= ’0’;
+			end if;
+		end process;
+	memory : process (clock)
+		begin
+			if (clock’event and clock=’1’) then
+				if (EN=’1’ and write=’1’) then
+					RW(to_integer(unsigned(address))) <¼ data_in;		
+				elsif (EN=’1’ and write=’0’) then
+					data_out <= RW(to_integer(unsigned(address)));
+				end if;
+			end if;
+	end process;

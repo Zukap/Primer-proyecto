@@ -1,0 +1,295 @@
+Library ieee;
+Use ieee.std_logic_1164.ALL;
+
+Library work;
+Use work.ALL;
+
+ENTITY alu IS
+Port( a: in std_logic_vector(7 downto 0);     --Entrada de 8 bits
+ b: in std_logic_vector(7 downto 0); --Entrada de 8 bits
+ resultat: out std_logic_vector(7 downto 0); --Resultado de
+--la operación
+op0: in std_logic;	--Op0,Op1,Op2 sirven
+op1: in std_logic;	--para seleccionar la operación
+op2: in std_logic;	--que queremos realizar a la ALU
+cout: out std_logic);	--Carry de salida END alu
+
+ARCHITECTURE estructura OF alu IS
+
+COMPONENT and_or	--Bloque AND/OR
+
+Port(aa,bb: in std_logic_vector(7 downto 0); --Entradas del bloque
+ operacio0,operacio1: in std_logic; --operación a realizar
+ sor_and_or: out std_logic_vector(7 downto 0)); --salida
+
+END COMPONENT;
+
+COMPONENT suma_resta	--Bloque suma y resta 
+Port(aa,bb:in std_logic_vector(7 downto 0); --Entradas del bloque
+operacio0,operacio1,operacio2: in std_logic; --Selecciona
+--la operación
+cout:out std_logic;	--Carry de salida 
+sor_sum_res:out std_logic_vector(7 downto 0));	--Salida
+
+END COMPONENT;
+COMPONENT multiplexor	--Bloque multiplexor
+ Port(entr_a,entr_b:in std_logic_vector(7 downto 0); --Entradas del bloque
+operacio0,operacio1,operacio2:in std_logic;	--Selecciona la operacion
+ sortida:out std_logic_vector(7 downto 0));	--Salida
+
+END COMPONENT;
+
+SIGNAL x,y:std_logic_vector (7 DOWNTO 0);	--Variables intermedias
+--para unir
+--los 3 bloques anteriores
+BEGIN
+
+U1:and_or port map(a,b,op0,op1,y);	--Paso de parámetros 
+U2:suma_resta port map(a,b,op0,op1,op2,cout,x);--Paso de parámetros 
+U3:multiplexor port map(x,y,op0,op1,op2,resultat);	--Paso de parametros 
+
+ 
+END estructura;
+
+
+Library ieee;
+Use ieee.std_logic_1164.ALL;
+
+Library work;
+Use work.ALL;
+
+
+
+ENTITY and_or IS	--Bloque que define las entradas salidas de la AND y la OR
+
+Port( aa:in std_logic_vector(7 downto 0); --Vector de 8 bits de entrada
+ bb:in std_logic_vector(7 downto 0); --Vector de 8 bits de entrada 
+ operacio0:in std_logic;	--Seleccionamos si queremos hacer la operación AND
+
+operacio1:in std_logic;	--la OR o ninguna de las dos.
+ sor_and_or: out std_logic_vector(7 downto 0));--Salida del bloque
+
+END and_or;
+
+
+Library ieee;
+Use ieee.std_logic_1164.ALL;
+
+Library work;
+Use work.ALL;
+
+
+ENTITY suma_resta IS	--Bloque que define las entradas y salidas de la
+suma y la resta
+
+Port( aa:in std_logic_vector(7 downto 0);	--Vector de entrada de 8 bits
+ bb:in std_logic_vector(7 downto 0);	--Vector de entrada de 8 bits 
+ operacio0:in std_logic	--En estas tres variables seleccionamos
+ operacio1:in std_logic;	--la operación que tenemos que realizar 
+ operacio2:in std_logic;
+cout:out std_logic;	--Carry de salida
+sor_sum_res: out std_logic_vector(7 downto 0));--Salida del bloque
+ END suma_resta;
+
+Library ieee;
+Use ieee.std_logic_1164.ALL;
+
+Library work;
+Use work.ALL;
+
+ENTITY multiplexor IS	--Bloque multiplexor
+
+Port( entr_a:in std_logic_vector(7 downto 0);	--Vector de entrada de 8 bits
+
+entr_b:in std_logic_vector(7 downto 0);	--Vector de entrada de 8 bits
+
+operacio0:in std_logic;	--Seleccionamos la operación que queremos realizar
+ 
+operacio1:in std_logic; operacio2:in std_logic;
+sortida: out std_logic_vector(7 downto 0)); --Salida END multiplexor;
+
+
+ARCHITECTURE andor OF and_or IS	--Definición de la función del bloque
+
+SIGNAL inter_op_0:std_logic; --Guarda el valor de la operacio0 negada 
+SIGNAL inter_op_1:std_logic; --Guarda el valor de la operacio1 negada
+ SIGNAL funcio:std_logic; --Le decimos si tiene que hacer la AND o
+--la OR
+
+BEGIN
+
+inter_op_0<=not operacio0; inter_op_1<=not operacio1; funcio<=inter_op_0 and inter_op_1;
+
+reg1(0)<=aa(0) and bb(0);	--Realizamos la AND y la OR del bit 0
+ reg2(0)<=aa(0) and funcio;
+reg3(0)<=bb(0) and funcio; sor_and_or(0)<=reg1(0) or reg2(0) or reg3(0);
+
+reg1(1)<=aa(1) and bb(1);	--Realizamos la AND y la OR del bit 1
+ reg2(1)<=aa(1) and funcio;
+reg3(1)<=bb(1) and funcio; sor_and_or(1)<=reg1(1) or reg2(1) or reg3(1);
+
+reg1(2)<=aa(2) and bb(2);	--Realizamos la AND y la OR del bit 2
+ reg2(2)<=aa(2) and funcio;
+reg3(2)<=bb(2) and funcio; sor_and_or(2)<=reg1(2) or reg2(2) or reg3(2);
+
+reg1(3)<=aa(3) and bb(3);	--Realizamos la AND y la OR del bit 3
+ reg2(3)<=aa(3) and funcio;
+reg3(3)<=bb(3) and funcio; sor_and_or(3)<=reg1(3) or reg2(3) or reg3(3);
+
+reg1(4)<=aa(4) and bb(4);	--Realizamos la AND y la OR del bit 4
+ reg2(4)<=aa(4) and funcio;
+reg3(4)<=bb(4) and funcio; sor_and_or(4)<=reg1(4) or reg2(4) or reg3(4);
+
+reg1(5)<=aa(5) and bb(5);	--Realizamos la AND y la OR del bit 5
+ reg2(5)<=aa(5) and funcio;
+reg3(5)<=bb(5) and funcio; sor_and_or(5)<=reg1(5) or reg2(5) or reg3(5);
+
+reg1(6)<=aa(6) and bb(6);	--Realizamos la AND y la OR del bit 6
+ reg2(6)<=aa(6) and funcio;
+reg3(6)<=bb(6) and funcio; sor_and_or(6)<=reg1(6) or reg2(6) or reg3(6);
+
+reg1(7)<=aa(7) and bb(7);	--Realizamos la AND y la OR del bit 7
+ reg2(7)<=aa(7) and funcio;
+reg3(7)<=bb(7) and funcio; sor_and_or(7)<=reg1(7) or reg2(7) or reg3(7);
+ 
+END andor;
+
+
+ARCHITECTURE sum_rest OF suma_resta IS
+
+SIGNAL opera0:std_logic; --Guardamos el valor de la operacio0 negada
+ SIGNAL opera1:std_logic; --Guardamos el valor de la operacio1 negada
+ SIGNAL opera2:std_logic; --Guardamos el valor de la operacio2 negada
+ SIGNAL invb:std_logic; --Bit para saber si tenemos que hacer la inversa de B
+
+SIGNAL clra:std_logic;	--Bit para poner el vector A a 0
+  SIGNAL clranot:std_logic;	--Guardamos el valor del clra negado
+  SIGNAL cin:std_logic_vector(7 downto 0); --Carry de entrada a cada uno de los 7 sumadores
+
+SIGNAL a_entr_sum:std_logic_vector(7 downto 0);	--Entrada del vector
+A	al sumador SIGNAL b_entr_sum:std_logic_vector(7 downto 0);	--Entrada del vector
+B	al sumador SIGNAL bit0:std_logic_vector(7 downto 0);	--Bits para realizar
+una NAND de tres entradas
+SIGNAL bit1:std_logic_vector(7 downto 0); SIGNAL bit2:std_logic_vector(7 downto 0);
+
+BEGIN
+
+opera0<=not operacio0; opera1<=not operacio1; opera2<=not operacio2; clra<=opera0 and opera1; clranot<=not clra; invb<=opera0 and opera2; cin(0)<=opera2 and operacio1;
+
+--OPERACIONES ANTES DE ENTRAR LOS DATOS AL SUMADOR
+
+a_entr_sum(0)<=clranot and aa(0); b_entr_sum(0)<=invb xor bb(0);
+
+a_entr_sum(1)<=clranot and aa(1); b_entr_sum(1)<=invb xor bb(1);
+
+a_entr_sum(2)<=clranot and aa(2); b_entr_sum(2)<=invb xor bb(2);
+
+a_entr_sum(3)<=clranot and aa(3); b_entr_sum(3)<=invb xor bb(3);
+
+a_entr_sum(4)<=clranot and aa(4); b_entr_sum(4)<=invb xor bb(4);
+
+a_entr_sum(5)<=clranot and aa(5); b_entr_sum(5)<=invb xor bb(5);
+
+a_entr_sum(6)<=clranot and aa(6); b_entr_sum(6)<=invb xor bb(6);
+
+a_entr_sum(7)<=clranot and aa(7); b_entr_sum(7)<=invb xor bb(7);
+ 
+--OPERACIONES DENTRO DEL SUMADOR
+
+sor_sum_res(0)<=cin(0) xor (a_entr_sum(0) xor b_entr_sum(0)); bit0(0)<=a_entr_sum(0) nand b_entr_sum(0); bit1(0)<=b_entr_sum(0) nand cin(0);
+bit2(0)<=a_entr_sum(0) nand cin(0); cin(1)<=not(bit0(0) and bit1(0) and bit2(0));
+
+sor_sum_res(1)<=cin(1) xor (a_entr_sum(1) xor b_entr_sum(1)); bit0(1)<=a_entr_sum(1) nand b_entr_sum(0); bit1(1)<=b_entr_sum(1) nand cin(1);
+bit2(1)<=a_entr_sum(1) nand cin(1);
+cin(2)<= not(bit0(1) and bit1(1) and bit2(1));
+
+
+sor_sum_res(2)<=cin(2) xor (a_entr_sum(2) xor b_entr_sum(2)); bit0(2)<=a_entr_sum(2) nand b_entr_sum(2); bit1(2)<=b_entr_sum(2) nand cin(2);
+bit2(2)<=a_entr_sum(2) nand cin(2);
+cin(3)<= not(bit0(2) and bit1(2) and bit2(2));
+
+
+sor_sum_res(3)<=cin(3) xor (a_entr_sum(3) xor b_entr_sum(3)); bit0(3)<=a_entr_sum(3) nand b_entr_sum(3); bit1(3)<=b_entr_sum(3) nand cin(3);
+bit2(3)<=a_entr_sum(3) nand cin(3);
+cin(4)<= not(bit0(3) and bit1(3) and bit2(3));
+
+
+sor_sum_res(4)<=cin(4) xor (a_entr_sum(4) xor b_entr_sum(4)); bit0(4)<=a_entr_sum(4) nand b_entr_sum(4); bit1(4)<=b_entr_sum(4) nand cin(4);
+bit2(4)<=a_entr_sum(4) nand cin(4);
+cin(5)<= not(bit0(4) and bit1(4) and bit2(4));
+
+
+sor_sum_res(5)<=cin(5) xor (a_entr_sum(5) xor b_entr_sum(5)); bit0(5)<=a_entr_sum(5) nand b_entr_sum(5); bit1(5)<=b_entr_sum(5) nand cin(5);
+bit2(5)<=a_entr_sum(5) nand cin(5);
+cin(6)<= not(bit0(5) and bit1(5) and bit2(5));
+
+
+sor_sum_res(6)<=cin(6) xor (a_entr_sum(6) xor b_entr_sum(6)); bit0(6)<=a_entr_sum(6) nand b_entr_sum(6); bit1(6)<=b_entr_sum(6) nand cin(6);
+bit2(6)<=a_entr_sum(6) nand cin(6);
+cin(7)<= not(bit0(6) and bit1(6) and bit2(6));
+
+
+sor_sum_res(7)<=cin(7) xor (a_entr_sum(7) xor b_entr_sum(7)); bit0(7)<=a_entr_sum(7) nand b_entr_sum(7); bit1(7)<=b_entr_sum(7) nand cin(7);
+bit2(7)<=a_entr_sum(7) nand cin(7);
+cout<= not(bit0(7) and bit1(7) and bit2(7)); END sum_rest;
+
+ARCHITECTURE multi OF multiplexor IS
+ 
+SIGNAL regi1:std_logic;	--Guardamos el valor de una AND de tres
+entrades correspondiente a la operación a realizar
+SIGNAL regi2:std_logic;	--Guardamos el valor de una AND de tres
+entradas correspondiente a la operación a realizar
+SIGNAL mux:std_logic;	--Bit que dice que entrada tieneque coger el
+multiplexor
+SIGNAL nmux:std_logic; --Negación de la variable mux
+SIGNAL sor0:std_logic_vector(7 downto 0); --Canal 0 del multiplexor 
+SIGNAL sor1:std_logic_vector(7 downto 0); --Canal 1 del multiplexor
+ SIGNAL opera0:std_logic; --Canal que tiene que coger el multiplexor dependiendo de la operación que se tenga que realizar
+SIGNAL opera1:std_logic; SIGNAL opera2:std_logic;
+
+BEGIN
+
+opera0<=not operacio0; opera1<=not operacio1; opera2<=not operacio2;
+regi1<=operacio0 and operacio1 and opera2; regi2<=opera0 and opera1 and operacio2; mux<=regi1 or regi2;
+nmux<=not mux;
+
+sor0(0)<=nmux and entr_a(0); sor1(0)<=mux and entr_b(0);
+sortida(0)<=sor0(0) or sor1(0);	--Salida del multiplexor
+correspondiente al bit 0
+
+
+sor0(1)<=nmux and entr_a(1); sor1(1)<=mux and entr_b(1);
+sortida(1)<=sor0(1) or sor1(1);	--Salida del multiplexor
+correspondiente al bit 1
+
+
+sor0(2)<=nmux and entr_a(2); sor1(2)<=mux and entr_b(2);
+sortida(2)<=sor0(2) or sor1(2);	--Salida del multiplexor
+correspondiente al bit 2
+
+
+sor0(3)<=nmux and entr_a(3); sor1(3)<=mux and entr_b(3);
+sortida(3)<=sor0(3) or sor1(3);	--Salida del multiplexor
+correspondiente al bit 3
+
+
+sor0(4)<=nmux and entr_a(4); sor1(4)<=mux and entr_b(4);
+sortida(4)<=sor0(4) or sor1(4);	--Salida del multiplexor
+correspondiente al bit 4
+
+
+sor0(5)<=nmux and entr_a(5); sor1(5)<=mux and entr_b(5);
+sortida(5)<=sor0(5) or sor1(5);	--Salida del multiplexor
+correspondiente al bit 5
+ 
+sor0(6)<=nmux and entr_a(6); sor1(6)<=mux and entr_b(6);
+sortida(6)<=sor0(6) or sor1(6);	--Salida del multiplexor
+correspondiente al bit 6
+
+
+sor0(7)<=nmux and entr_a(7); sor1(7)<=mux and entr_b(7);
+sortida(7)<=sor0(7) or sor1(7);	--Salida del multiplexor
+correspondiente al bit 7
+
+
+END multi;
